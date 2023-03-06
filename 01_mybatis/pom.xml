@@ -52,12 +52,29 @@
 	</dependency>
   
     <!-- test(테스트) 관련 라이브러리 -->
-    <dependency>
-      <groupId>junit</groupId> 		<!-- 테스트 할 때 사용하는 라이브러리 -->
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
+	<dependency>
+	    <groupId>org.junit.jupiter</groupId>	<!-- 테스트 할 때 사용하는 라이브러리 -->
+	    <artifactId>junit-jupiter-api</artifactId>
+	    <version>5.9.2</version>
+	    <scope>test</scope>
+	</dependency>
+	
+	<!-- 230306 8교시 테스트 할 때마다 값을 바꾸지 않고 특정 값을 지정해 여러 번 테스트 할 수 있게 만들기-->
+	<dependency>
+	    <groupId>org.junit.jupiter</groupId>
+	    <artifactId>junit-jupiter-params</artifactId>
+	    <version>5.9.2</version>
+	    <scope>test</scope>
+	</dependency>
+	
+	<!-- 230306 3교시 테스트 메소드 -->
+	<dependency>
+	    <groupId>org.assertj</groupId>
+	    <artifactId>assertj-core</artifactId>
+	    <version>3.24.2</version>
+	    <scope>test</scope>
+	</dependency>
+	
   </dependencies>
 
   <!-- 프로젝트 빌드에 대한 설정 -->

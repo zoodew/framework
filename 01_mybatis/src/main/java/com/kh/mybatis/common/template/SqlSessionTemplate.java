@@ -27,6 +27,7 @@ public class SqlSessionTemplate {
 			
 			// 2. SqlSessionFactory 오브젝트 생성
 			factory = builder.build(is);
+//			factory = builder.build(is, "KH");			// 230306 2교시 evironments 여러 개 가능. 매개값으로 KH를 줘야 함
 			
 			// 3. SqlSession 오브젝트 생성 (true : 오토 커밋 false : 수동 커밋)
 			session = factory.openSession(false);

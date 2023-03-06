@@ -7,8 +7,38 @@
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-config.dtd">
 
-<!-- <configuration> : 필요한 설정들을 작성 -->  
+<!-- <configuration> : 필요한 설정들을 작성. 설정 최상위 태그 -->  
 <configuration>
+
+<!-- 230306 7교시 -->
+	
+	<!--
+		<properties> : 외부 properties 파일의 내용을 불러올 때 사용하는 요소
+					   properties 하위에 property 요소를 지정하여 mybatis-config.xml 사용할 값을 미리 지정할 수 있다.
+		
+		properties 요소를 통해 불러온 값 또는 지정된 값을 아래와 같이 필요한 곳에서 사용할 수 있다.
+		ex) <environment>하위의 <dataSource type="POOLED">하위의 <property name="driver" value="${driver}"/>
+	-->
+	<!--
+	<properties>
+		<property name="db.driver" value="oracle.jdbc.driver.OracleDriver"/>
+		<property name="db.url" value="jdbc:oracle:thin:@localhost:1521:xe"/>
+		<property name="db.username" value="WEB"/>
+		<property name="db.password" value="WEB"/>
+	</properties>
+	-->
+	<!-- DB 연결 정보를 외부에 있는 driver.properties 파일에서 불러오기 위한 요소 태그 -->
+	<properties resource="driver.properties" />
+		<!-- 직접 xml에 하드코딩(바로 위 주석) 하는 것이 아니라, resource : 클래스파일을 기준으로 내가 읽어올 속성 -->
+	
+	<!--
+		<typeAliases> : mybatis에서 사용할 자료형의 별칭을 선언하는 요소
+	-->
+	<typeAliases>
+		<typeAlias type="com.kh.mybatis.member.model.vo.Member" alias="Member"/>
+		<!-- member-mapper.xml에서 패키지명까지 길게 쓰던 것(com.kh.mybatis.member.model.vo.Member)을 Member로 간단히 작성 가능하게 해줌 -->
+	</typeAliases>
+
 	<!--
 		<environments> : DB에 연결할 설정 정보들을 선언하는 요소
 		
@@ -24,12 +54,25 @@
 				(속성에 관한 것들은 수업자료에 다 있음 참고하기)
 			-->
 			<transactionManager type="JDBC"/>
+			
 			<!-- <dataSource> : 실제 DB 접속에 관한 정보를 설정하는 요소 -->
+			<dataSource type="POOLED">
+				<property name="driver" value="${db.driver}"/>
+				<property name="url" value="${db.url}"/>
+				<property name="username" value="${db.username}"/>
+				<property name="password" value="${db.password}"/>
+			</dataSource>
+		</environment>
+
+<!-- 230306 2교시 -->		
+		<!-- 한 개가 아닌 여러 개의 environment를 넣을 수 있음. 여러 개 이면 environments태그의 default속성을 기본값으로 가짐-->
+		<environment id="KH">
+			<transactionManager type="JDBC"/>
 			<dataSource type="POOLED">
 				<property name="driver" value="oracle.jdbc.driver.OracleDriver"/>
 				<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"/>
-				<property name="username" value="WEB"/>
-				<property name="password" value="WEB"/>
+				<property name="username" value="KH"/>
+				<property name="password" value="KH"/>
 			</dataSource>
 		</environment>
 	</environments>
@@ -38,4 +81,5 @@
 	<mappers>
 		<mapper resource="mappers/member/member-mapper.xml"/>	<!-- resource는 클래스 패스 기준으로 지정. 클래스패스란? 클래스 파일이 위치하는 곳 -->
 	</mappers>
+	
 </configuration>

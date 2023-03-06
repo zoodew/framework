@@ -1,12 +1,136 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>	<!--  xml 파일이라는 선언 -->
 
 <!-- 230228 6교시 -->
 
 <!-- Mapper 설정 파일임을 선언 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="memberMapper"> <!-- namespace : 외부에서 xml에 접근할 수 있는 이름을 주는 속성 -->
-	<select id="selectCount" resultType="_int">	<!-- id : 쿼리문의 식별자 resultType : 쿼리문을 수행해서 나온 자료가 3 정수형 그래서 int형으로 -->
-		SELECT COUNT(*) FROM MEMBER	<!-- 문자열로 감싸서 넣는 게 아님 그대로 넣으면 됨 -->	
+<mapper namespace="memberMapper"> 					<!-- namespace : 외부에서 xml에 접근할 수 있는 이름을 주는 속성 -->
+	
+<!-- 230306 8교시 리팩토링 중복되는 쿼리문 정리 -->
+	<!--
+		<sql> : 중복되는 쿼리 내용을 재사용하기 위한 SQL 조각
+				사용하려는 요소(ex. 아래의 <select>)보다 항상 위에 있어야 한다.
+	-->	
+	<sql id="selectMemberSql">
+		SELECT NO,
+			   ID,
+			   PASSWORD,
+			   ROLE,
+			   NAME,
+			   PHONE,
+			   EMAIL,
+			   ADDRESS,
+			   HOBBY,
+			   STATUS,
+			   ENROLL_DATE,	
+			   MODIFY_DATE
+		FROM MEMBER
+	</sql>
+	
+	
+<!-- 230306 6교시 모든 회원 조회 값을 넣어주는 방법 2)-->
+	<resultMap id="memberResultMap" type="Member">	<!-- type 속성 mybatis-config.xml의 <typeAliases>를 통해 간소화 -->
+	<!-- resultMap태그의 id : resultMap을 식별하기 위한 값. type : 결과값을 담을 자바인스턴스의 클래스 타입 -->
+		
+		<!-- property 필드명 column 컬럼명 -->
+		<!-- id : 조회 결과의 기본 키 컬럼을 매핑한다. -->
+		<id property="no" column="NO"/>
+		<!-- result : 조회 결과의 일반 컬럼을 매핑한다. -->
+		<result property="id" column="ID"/>
+		<result property="password" column="PASSWORD"/>
+		<result property="role" column="ROLE"/>
+		<result property="name" column="NAME"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="hobby" column="HOBBY"/>
+		<result property="status" column="STATUS"/>
+		<result property="enrollDate" column="ENROLL_DATE"/>
+		<result property="modifyDate" column="MODIFY_DATE"/>
+	</resultMap>
+
+
+<!-- 회원 수 조회 쿼리문 -->
+	<select id="selectCount" resultType="_int">		<!-- id : 쿼리문의 식별자 resultType : 쿼리문을 수행해서 나온 자료가 3 정수형 그래서 int형으로. 언더바? Mybatis 내장 별칭 -->
+		SELECT COUNT(*) FROM MEMBER					<!-- 문자열로 감싸서 넣는 게 아님 그대로 넣으면 됨 -->	
 	</select>
+
+	
+	
+<!-- 230306 6교시 -->
+<!-- 모든 회원 조회 쿼리문 -->
+	<!--
+		쿼리문의 수행 결과가 담긴 ResultSet은 resultType의 인스턴스에 자동으로 mapping 되어 리턴된다.
+		단, 조회 결과의 컬럼명과 자바 클래스의 필드명이 동일해야 자동으로 mapping이 된다. (대소문자는 구분하지 않는다.)
+	
+		값을 넣어주는 방법 1) 쿼리문에서 "AS 별칭"으로 조회되는 컬럼명을 변경한다.
+				문제점. 컬럼명 필드명이 바뀔 때마다 일일히 변경해 줘야 해서 유지보수에 용이한 방법이 아니다. 지양함.
+		값을 넣어주는 방법 2) resultMap을 이용해서 명시적으로 컬럼명과 필드명을 mapping 시켜준다.
+	-->
+	
+<!-- 	<select id="selectAll" resultType="com.kh.mybatis.member.model.vo.Member">	Member object로 만들 거라서 resultType을 Member로(패키지까지 다 적어주기) -->
+	<select id="selectAll" resultMap="memberResultMap">	<!-- id가 memberResultMap인 요소를 참조해 매핑작업을 함 -->
+		<!-- 값 넣어주는 방법 1) 쿼리문에서 "AS 별칭"으로 조회되는 컬럼명을 변경한다. 지양 -->
+		<!-- SELECT NO,
+			   ID,
+			   PASSWORD,
+			   ROLE,
+			   NAME,
+			   PHONE,
+			   EMAIL,
+			   ADDRESS,
+			   HOBBY,
+			   STATUS,
+			   ENROLL_DATE AS enrollDate,	
+			   MODIFY_DATE AS modifyDate
+		FROM MEMBER
+		WHERE STATUS = 'Y' -->
+		
+		<!-- 값 넣어주는 방법 2) resultMap 태그를(상단에 있음) 이용해서 명시적으로 컬럼명과 필드명을 mapping 시켜준다-->
+		<!--
+		SELECT NO,
+			   ID,
+			   PASSWORD,
+			   ROLE,
+			   NAME,
+			   PHONE,
+			   EMAIL,
+			   ADDRESS,
+			   HOBBY,
+			   STATUS,
+			   ENROLL_DATE,	
+			   MODIFY_DATE
+		FROM MEMBER
+		WHERE STATUS = 'Y'
+		-->
+		
+<!-- 230306 8교시 리팩토링 중복되는 쿼리문 정리 -->
+		<include refid="selectMemberSql"/>
+		WHERE STATUS = 'Y'
+		
+	</select>
+	
+	
+<!-- 230306 7교시 -->
+<!-- ID로 멤버 조회 쿼리문 -->
+	<!--
+		외부에서 매개변수로 받는 값이 있으면 parameterType 속성에 해당하는 파라미터의 타입을 지정해야 한다.
+		외부에서 매개변수로 받은 값은 #{변수명}으로 값을 가져온다.
+	-->
+	<select id="selectMemberById" parameterType="string" resultMap="memberResultMap">
+						<!-- 왜 string String 대문자 아닌가? 강의듣고 정리!!-->
+		<!--
+		SELECT NO, ID, PASSWORD, ROLE, NAME, PHONE, EMAIL, ADDRESS, HOBBY, STATUS, ENROLL_DATE, MODIFY_DATE
+		FROM MEMBER
+		WHERE ID = #{id} AND STATUS = 'Y'
+		-->
+
+<!-- 230306 8교시 리팩토링 중복되는 쿼리문 정리 -->
+		<include refid="selectMemberSql"/>
+		WHERE ID = #{id} AND STATUS = 'Y'
+	</select>
+	
 </mapper>
+
+
