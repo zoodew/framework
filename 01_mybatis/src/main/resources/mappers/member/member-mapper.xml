@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 230228 6교시 -->
+
+<!-- Mapper 설정 파일임을 선언 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="memberMapper"> <!-- namespace : 외부에서 xml에 접근할 수 있는 이름을 주는 속성 -->
+	<select id="selectCount" resultType="_int">	<!-- id : 쿼리문의 식별자 resultType : 쿼리문을 수행해서 나온 자료가 3 정수형 그래서 int형으로 -->
+		SELECT COUNT(*) FROM MEMBER	<!-- 문자열로 감싸서 넣는 게 아님 그대로 넣으면 됨 -->	
+	</select>
+</mapper>

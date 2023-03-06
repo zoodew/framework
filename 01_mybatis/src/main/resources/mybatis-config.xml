@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 230228 6교시 -->
+
+<!-- Mybatis 설정 파일임을 선언 -->
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!-- <configuration> : 필요한 설정들을 작성 -->  
+<configuration>
+	<!--
+		<environments> : DB에 연결할 설정 정보들을 선언하는 요소
+		
+		default 속성
+			여러 개의 연결 정보 중에서 기본으로 연결할 설정 정보를 지정하는 속성이다.
+	-->
+	<environments default="web">
+		<environment id="web">
+			<!--
+				<transactionManager> : transaction을 제어하기 위한 설정.
+				
+				type="JDBC" : JDBC가 커밋이나 롤백을 직접 설정할 수 있게 해줌
+				(속성에 관한 것들은 수업자료에 다 있음 참고하기)
+			-->
+			<transactionManager type="JDBC"/>
+			<!-- <dataSource> : 실제 DB 접속에 관한 정보를 설정하는 요소 -->
+			<dataSource type="POOLED">
+				<property name="driver" value="oracle.jdbc.driver.OracleDriver"/>
+				<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"/>
+				<property name="username" value="WEB"/>
+				<property name="password" value="WEB"/>
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<!-- <mappers> : 사용할 쿼리문이 담긴 Mapper 파일을 등록하는 요소 -->
+	<mappers>
+		<mapper resource="mappers/member/member-mapper.xml"/>	<!-- resource는 클래스 패스 기준으로 지정. 클래스패스란? 클래스 파일이 위치하는 곳 -->
+	</mappers>
+</configuration>

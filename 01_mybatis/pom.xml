@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+<!-- 230228 4교시 -->
+
+  <!-- Maven pom의 버전 -->
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- 프로젝트 정보 설정 -->
+  <groupId>com.kh</groupId>
+  <artifactId>01_mybatis</artifactId>
+  <version>0.0.1-SNAPSHOT</version>		<!-- 프로젝트의 현재 버전 --> <!-- 운영할 땐 버전 정보를 바꿔서 처리. 개발중 SNAPSHOT 운영 RELEASE -->
+
+  <name>01_mybatis</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+
+  <!-- 패키징 방식(default : jar) -->
+  <packaging>jar</packaging>
+
+  <!-- 프로젝트에 대한 속성 설정 -->
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>		<!-- 자바 몇 버전 쓸지 설정 -->
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
+
+  <!-- 라이브러리 의존성 설정 -->
+  <dependencies>
+
+	<!-- DB 관련 라이브러리 -->
+	<dependency>
+	    <groupId>com.oracle.database.jdbc</groupId>
+	    <artifactId>ojdbc6</artifactId>
+	    <version>11.2.0.4</version>
+	</dependency>
+  		
+	<dependency>
+	    <groupId>org.mybatis</groupId>
+	    <artifactId>mybatis</artifactId>
+	    <version>3.5.11</version>
+	</dependency>
+  		
+	<!-- lombok 라이브러리 -->
+	<dependency>
+	    <groupId>org.projectlombok</groupId>	<!-- 서버에 저장된 여러 프로젝트 중 lombok임을 구분하기 위한 id(대부분 회사의 도메인 역순으로 지정함) -->
+	    <artifactId>lombok</artifactId>			<!-- 실제 빌드할 때 파일의 이름 -->
+	    <version>1.18.26</version>
+	    <scope>provided</scope>
+	</dependency>
+  
+    <!-- test(테스트) 관련 라이브러리 -->
+    <dependency>
+      <groupId>junit</groupId> 		<!-- 테스트 할 때 사용하는 라이브러리 -->
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <!-- 프로젝트 빌드에 대한 설정 -->
+  <build>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
+          <configuration>
+          	<archive>
+          	  <manifest>
+          	  	<mainClass>com.kh.mybatis.App</mainClass>
+          	  </manifest>
+          	</archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.7.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
