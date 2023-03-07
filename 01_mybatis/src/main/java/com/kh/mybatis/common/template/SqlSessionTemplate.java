@@ -23,7 +23,7 @@ public class SqlSessionTemplate {
 			
 			// 마이바티스에서 자원을 좀 더 쉽게 로드할 수 있는 Resources 클래스를 제공한다.
 			is = Resources.getResourceAsStream("mybatis-config.xml"); // ("") 읽어오고자 하는 파일명 적어주기
-											// 커넥션 이런 서 설정파일에서 다 만들어줘서 여기서 굳이 만들 필요 없음
+											// 커넥션 이런 거 설정파일에서 다 만들어줘서 여기서 굳이 만들 필요 없음
 			
 			// 2. SqlSessionFactory 오브젝트 생성
 			factory = builder.build(is);

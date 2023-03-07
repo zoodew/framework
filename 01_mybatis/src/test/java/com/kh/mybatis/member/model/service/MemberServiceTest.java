@@ -21,7 +21,7 @@ import com.kh.mybatis.member.model.vo.Member;
 
 // 230306 4교시
 @DisplayName("MemberService 테스트")
-@TestMethodOrder(OrderAnnotation.class)	// 230307 1교시 테스트 메소드 순서 제어 @TestMethodOrder OrderAnnotation에 class 정보 넘겨주고 메소드에 order 주석 달아서 순서 지정해줌
+@TestMethodOrder(OrderAnnotation.class)	// 230307 1교시 테스트 메소드 순서 제어 @TestMethodOrder OrderAnnotation에 class 정보 넘겨주고 메소드에 @order 달아서 순서 지정해줌
 class MemberServiceTest {
 	
 	private MemberService service;
@@ -109,9 +109,9 @@ class MemberServiceTest {
 // 230307 1교시 2교시(@ParameterizedTest)
 //	@Test
 	@ParameterizedTest			// @ValueSource = 하나의 매개값에 값을 넣을 때 사용 | @CsvSource = 여러 개의 매개값에 값을 넣을 때 사용
-	@CsvSource(value = {"test1, 1234, 홍길동", "test2, 4567, 임꺽정"})	// Comma Seperated Value 데이터를 콤마(,)로 구분하는 포맷
+	@CsvSource(value = {"test1, 1234, 홍길동", "test2, 4567, 임꺽정"})	// CSV(Comma Seperated Value) 데이터를 콤마(,)로 구분하는 포맷
 	@Order(4)
-	@DisplayName("회원 등록 테스트")			// r 매개값 @ParameterizedTest 설정 후 지정. @test로 쓸 때는 없음
+	@DisplayName("회원 등록 테스트")			// r 매개값 @ParameterizedTest 설정 후 지정. @test로 쓸 때는 매개값 없음
 	void insertMemberTest(String id, String password, String name) {
 		int result = 0;
 //		Member member = new Member("test1", "1234", "홍길동");	// Member.java에 생성자 생성한 거 사용
@@ -119,10 +119,13 @@ class MemberServiceTest {
 		// 여러 값 지정 후 테스트 @ParameterizedTest @CsvSource
 		Member member = new Member(id, password, name);
 		
+		// System.out.println("인서트 멤버 : " + member);
+		
 		result = service.save(member);	// 웹이 없어서 값을 받아올 수 없기 때문에 위에서 member 값을 받아와줌.
 		
 		assertThat(result).isGreaterThan(0);	// 영향받은 행의 개수가 0보다 큰지
 		assertThat(member.getNo()).isGreaterThan(0);
+		
 		// 위에서 만든 회원 조회 테스트 메소드 사용
 //		assertThat(service.findMemberById("test1")).isNotNull();
 		// 여러 값 지정 후 테스트 @ParameterizedTest @CsvSource
@@ -159,6 +162,8 @@ class MemberServiceTest {
 		member.setPassword(password);
 		member.setName(name);
 		
+//		System.out.println("업데이트 멤버 : " + member);
+		
 		result = service.save(member);	// 영향받은 행의 개수 result에 담아줌
 		
 		assertThat(result).isGreaterThan(0);
@@ -176,13 +181,14 @@ class MemberServiceTest {
 		int result = 0;
 
 // @Test용
-		// 아이디(unique 제약조건 걸린 컬럼)를 조회해서 회원 삭제
+		// 아이디(unique 제약조건 걸린 컬럼 = 유일)를 조회해서 회원 삭제
 //		result = service.delete("test1");	// delete 메소드 수행하면 영향 받은 행의 개수 리턴. 그 개수를 result에 담아줌
 
 // @ParameterizedTest용 , 테스트 메소드 매개값 String id 주기 테스트 클래스 전체 돌리기
 		result = service.delete(id);
 		
-		assertThat(result).isEqualTo(1);	// unique 제약 조건이 걸려 있어서 삭제하면 영향 받은 행의 개수 1 나옴
+		assertThat(result).isEqualTo(1);	// id는 unique 제약 조건이 걸려 있어서 id로 조회해서 삭제하면 하나 이상 삭제가 불가능하다.
+											// 그래서 삭제하면 영향 받은 행의 개수 1이 나옴
 		assertThat(service.findMemberById(id)).isNull(); // 실제 DB에서 삭제 됐는지 확인하는 테스트. DB에서 id 조회 후 null이면 테스트 성공
 	}
 	

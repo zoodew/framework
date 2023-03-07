@@ -18,11 +18,11 @@ public class MemberService {
 	// 멤버수 조회
 	public int getMemberCount() {
 		int count = 0;
-		SqlSession session = getSession();	// import 에 static getSession하고 SqlSessionTemplate 생략
+		SqlSession session = getSession();	// import 에 static getSession하고 SqlSessionTemplate.getSession()에서 SqlSessionTemplate. 생략
 
 		count = new MemberDao().getMemberCount(session);
 		
-		// connection 등도 사용 후 close를 해 준 것처럼	session도 반환해줌
+		// connection 등도 사용 후 close를 해 준 것처럼 session도 반환해줌
 		session.close();
 		
 		// myBatis에서는 mvc의 connection대신 SqlSession사용한다고 생각하기
@@ -63,14 +63,14 @@ public class MemberService {
 		// mvc에서 connection을 얻어오듯 SqlSession object를 얻어옴
 		SqlSession session = getSession();
 		
-		// no(기본키)값과 중복된다면 이미 존재하는 회원이니까 update, no값과 일치하는 값이 없다면 새로운 회원이니 insert
-		if(member.getNo() > 0) {	// no(PK)값 받아서 0보다 크면 ~
+		if(member.getNo() > 0) {	// no는 PK값이라 유일함 no 받아서 0보다 크면 ~
 			result = new MemberDao().updateMember(session, member);
 		} else {
 			result = new MemberDao().insertMember(session, member);			
 		}
 		
-		System.out.println(member);
+//		System.out.println(member);
+//		System.out.println(result);
 		
 		// 영향 받은 행이 있으면(insert든 update든) 커밋, 아니면 롤백
 		if(result > 0) {

@@ -17,7 +17,7 @@
 					   properties 하위에 property 요소를 지정하여 mybatis-config.xml 사용할 값을 미리 지정할 수 있다.
 		
 		properties 요소를 통해 불러온 값 또는 지정된 값을 아래와 같이 필요한 곳에서 사용할 수 있다.
-		ex) <environment>하위의 <dataSource type="POOLED">하위의 <property name="driver" value="${driver}"/>
+		ex) <environment> 하위의 <dataSource type="POOLED"> 하위의 <property name="driver" value="${driver}"/>
 	-->
 	<!--
 	<properties>

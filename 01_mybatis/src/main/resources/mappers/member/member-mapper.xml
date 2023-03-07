@@ -120,7 +120,7 @@
 		외부에서 매개변수로 받은 값은 #{변수명}으로 값을 가져온다.
 	-->
 	<select id="selectMemberById" parameterType="string" resultMap="memberResultMap">
-						<!-- 왜 string String 대문자 아닌가? 내장별칭 -->
+										<!-- 왜 string String 대문자 아닌가? mybatis 내장별칭 -->
 		<!--
 		SELECT NO, ID, PASSWORD, ROLE, NAME, PHONE, EMAIL, ADDRESS, HOBBY, STATUS, ENROLL_DATE, MODIFY_DATE
 		FROM MEMBER
@@ -141,7 +141,7 @@
 		데이터를 insert 후 PK 값을 받아오기 위해서는 useGeneratedKeys, keyColumn, keyProperty 속성을 추가해야 한다.
 			useGeneratedKeys	: insert 후에 PK 값을 받아올 수 있도록 허용하는 속성
 			keyColumn			: PK에 해당하는 컬럼을 지정하는 속성
-			keyProperty			: PK 값이 담길 파라미터 인스턴스의 필드명을 지정하는 속성									  insert가 완료되면 파라미터에 담긴 키 값을 set해줌
+			keyProperty			: PK 값이 담길 파라미터 인스턴스의 필드명을 지정하는 속성	insert가 완료되면 파라미터에 담긴 키 값을 set해줌
 	-->
 		INSERT INTO MEMBER (
 			NO,
@@ -158,7 +158,7 @@
 			MODIFY_DATE
 		) VALUES(
 			SEQ_UNO.NEXTVAL,
-			#{id},	<!-- 인스턴스의 필드명으로 통해 각각의 필드에 접근이 가능함 -->
+			#{id},	<!-- 인스턴스의 필드명을 통해 각각의 필드에 접근이 가능함 -->
 			#{password},
 			DEFAULT,
 			#{name},

@@ -15,7 +15,7 @@ import java.util.List;
 public class BoardService {
 
 // 230307 4교시 5교시
-	// 게시글 수 조회 테스트
+	// 게시글 수 조회 테스트, 게시글 목록 조회 테스트
 	public int getBoardCount() {
 		int count = 0;		// alt shift r 하면 한 번에 여러 개의 이름 변경 가능
 //		SqlSession session = SqlSessionTemplate.getSession();	// import static으로 변경해서 간단히 작성 가능

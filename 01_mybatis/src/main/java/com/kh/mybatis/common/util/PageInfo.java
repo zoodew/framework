@@ -3,7 +3,7 @@ package com.kh.mybatis.common.util;
 // 230307 5교시 게시글 목록 조회 목록 페이징 처리를 위한 클래스
 public class PageInfo {
 
-private int currentPage;
+	private int currentPage;
 	
 	private int pageLimit;
 	
@@ -14,9 +14,10 @@ private int currentPage;
 	/**
 	 * @param currentPage 현재 페이지
 	 * @param pageLimit 한 페이지에 보이는 페이지의 수 (하단에 1, 2, 3, ... 8, 9, 10)
-	 * @param listCount 전체 리스트의 수
+	 * @param listCount 전체 리스트의 수			(게시물의 갯수)
 	 * @param listLimit 한 페이지에 표시될 리스트의 수 (한 페이지에 게시물 몇 개 표시할지)
 	 */
+	// 모든 값을 다 받는 생성자
 	public PageInfo(int currentPage, int pageLimit, int listCount, int listLimit) {
 		this.currentPage = currentPage;
 		this.pageLimit = pageLimit;

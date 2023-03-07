@@ -55,7 +55,7 @@ class BoardServiceTest {
 		
 		count = service.getBoardCount();
 		
-		System.out.println(count);
+//		System.out.println(count);
 		
 		assertThat(count).isGreaterThan(0);
 	}
@@ -70,12 +70,13 @@ class BoardServiceTest {
 		int listCount = 0;
 
 		listCount = service.getBoardCount();	// getBoardCountTest()를 통해 얻어온 값
+//		System.out.println("게시글 목록 조회 테스트 listCount : " + listCount);
 		pageInfo = new PageInfo(2, 10, listCount, 10);	// PageInfo에 커서 올려놓으면 매개값 설명 나옴
 		list = service.findAll(pageInfo);	// 새로운 메소드를 생성하는 게 아니라 기존의 findAll 메소드에 pageInfo 파라미터 추가
 		
-//		System.out.println(list);			// list 값 다 가져옴
-		System.out.println(list.get(0));	// list의 0번 인덱스 값 가져와라 list 다 가져오면 너무 많으니 하나만 확인
-		System.out.println(list.size());
+//		System.out.println(list);			// list 값 다 가져옴 너무 많음!!!!!!!
+//		System.out.println(list.get(0));	// list의 0번 인덱스 값 가져와라 list 다 가져오면 너무 많으니 하나만 확인
+//		System.out.println(list.size());
 		
 		assertThat(list).isNotNull().isNotEmpty();
 		assertThat(list.size()).isEqualTo(10);
@@ -100,7 +101,7 @@ class BoardServiceTest {
 		
 		count = service.getBoardCount(writer, title, content);
 		
-		System.out.println(count);
+//		System.out.println(count);
 		// writer, title, content 셋 다 null인 count 출력
 		// writer에 ju가 포함된 count 출력
 		// title에 50가 포함된 count 출력
@@ -144,8 +145,8 @@ class BoardServiceTest {
 		list = service.findAll(writer, title, content);
 		
 		// 검색 기능 적용해 게시글 조회가 되나 확인
-		System.out.println(list);
-		System.out.println(list.size());
+//		System.out.println(list);
+//		System.out.println(list.size());
 			// writer, title, content 셋 다 null인 list, list.size 출력
 			// writer에 ju가 포함된 list, list.size 출력
 			// title에 50가 포함된 list, list.size 출력

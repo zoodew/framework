@@ -39,6 +39,10 @@ public class BoardDao {
 		 */
 		int limit = pageInfo.getListLimit();
 		int offset = (pageInfo.getCurrentPage() - 1) * limit;
+						// getCurrentPage = 현재 페이지
+						// (1페이지 - 1) * 10 > offset = 0
+						// (2페이지 - 1) * 10 > offset = 10
+						// (3페이지 - 1) * 10 > offset = 20	이 offset 값을 갖고 위의 주석 ex를 참고하기
 		
 		RowBounds rowBounds = new RowBounds(offset, limit);
 		
