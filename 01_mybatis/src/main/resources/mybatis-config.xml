@@ -31,12 +31,20 @@
 	<properties resource="driver.properties" />
 		<!-- 직접 xml에 하드코딩(바로 위 주석) 하는 것이 아니라, resource : 클래스파일을 기준으로 내가 읽어올 속성 -->
 	
+<!-- 230307 2교시 -->
+	<!-- <settings> : 마이바티스와 관련된 기본 설정을 선언하는 요소 -->
+	<settings>
+		<!-- 파라미터의 null 값에 대한 jdbc 타입을 지정한다. -->
+		<setting name="jdbcTypeForNull" value="NULL"/>
+	</settings>
+	
 	<!--
 		<typeAliases> : mybatis에서 사용할 자료형의 별칭을 선언하는 요소
 	-->
 	<typeAliases>
 		<typeAlias type="com.kh.mybatis.member.model.vo.Member" alias="Member"/>
 		<!-- member-mapper.xml에서 패키지명까지 길게 쓰던 것(com.kh.mybatis.member.model.vo.Member)을 Member로 간단히 작성 가능하게 해줌 -->
+		<typeAlias type="com.kh.mybatis.board.model.vo.Board" alias="Board"/>
 	</typeAliases>
 
 	<!--
@@ -77,9 +85,11 @@
 		</environment>
 	</environments>
 	
+	<!-- 230228 6교시, 230307 5교시 -->
 	<!-- <mappers> : 사용할 쿼리문이 담긴 Mapper 파일을 등록하는 요소 -->
 	<mappers>
 		<mapper resource="mappers/member/member-mapper.xml"/>	<!-- resource는 클래스 패스 기준으로 지정. 클래스패스란? 클래스 파일이 위치하는 곳 -->
+		<mapper resource="mappers/board/board-mapper.xml"/>
 	</mappers>
 	
 </configuration>

@@ -35,4 +35,17 @@ public class Member {
 	private Date enrollDate;
 
 	private Date modifyDate;
+
+// 230307 1교시
+	// alt shift s generate constructor using fields로 생성자 생성
+	public Member(String id, String password, String name) {
+		this.id = id;
+		this.password = password;
+		this.name = name;
+	}
+	
+	
+	
+	
+	
 }

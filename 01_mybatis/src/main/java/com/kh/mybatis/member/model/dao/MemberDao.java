@@ -33,5 +33,27 @@ public class MemberDao {
 		// 매개값에 id 주면 원하는 곳에 id값을 전달해 줄 수 있음. > memberMapper의 selectMemberById의 #{id}
 	}
 
+// 230307 1교시 2교시
+	// 회원 등록 테스트 INSERT
+	public int insertMember(SqlSession session, Member member) {
+											// ㄴ 매개값으로 member 정보 받아와서 r 받아온 정보 넣어줌
+		return session.insert("memberMapper.insertMember", member);
+
+	}
+
+// 230307 3교시
+	// 회원 등록 테스트 UPDATE
+	public int updateMember(SqlSession session, Member member) {
+		
+		return session.update("memberMapper.updateMember", member);
+	}
+	
+// 230307 3교시
+	// 회원 삭제 테스트
+	public int delete(SqlSession session, String id) {
+
+		return session.delete("memberMapper.deleteMember", id);
+	}
+
 	
 }

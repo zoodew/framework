@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 230307 5교시 -->
+<!-- 모든 설명들 member-mapping.xml 참고하기 -->
+
+<!-- Mapper 설정 파일임을 선언 -->
+<!-- 선언만 한다고 다 사용가능한 게 아니라 메인 설정 파일(mybatis-config)에 가서 등록을 해줘야 함 <mappers>에-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="boardMapper">	<!-- namespace : 외부에서 접근할 때 이 mapper.xml에 접근할 수 있게 해주는 식별자 속성 -->
+
+<!-- 230307 8교시 -->
+	<!-- 재사용 가능한 sql 조각을 만들어 중복되는 쿼리문 정리 -->
+	<sql id="boardListSql">
+		SELECT B.NO,
+			   B.TITLE,
+			   M.ID,
+			   B.ORIGINAL_FILENAME,
+			   B.RENAMED_FILENAME,
+			   B.READCOUNT,
+			   B.CREATE_DATE
+		FROM BOARD B JOIN MEMBER M ON(B.WRITER_NO = M.NO) 
+		WHERE B.STATUS = 'Y'
+	</sql>
+
+<!-- 230307 6교시-->
+	<!-- 게시글 목록 조회 테스트 쿼리문 mybatis-config.xml <typeAliases>로 가기 -->	
+	<resultMap id="boardListResultMap" type="Board">
+		<id property="no" column="NO"/>				<!-- PK요소는 <id> -->
+		<result property="title" column="TITLE"/>	<!-- 나머지는 <result> -->	
+		<result property="writerId" column="ID"/>
+		<result property="originalFileName" column="ORIGINAL_FILENAME"/>
+		<result property="renamedFileName" column="RENAMED_FILENAME"/>
+		<result property="readCount" column="READCOUNT"/>
+		<result property="createDate" column="CREATE_DATE"/>
+	</resultMap>
+	
+<!-- 230307 5교시 -->
+	<!-- 게시글 수 조회 테스트 쿼리문-->
+	<select id="selectBoardCount" resultType="_int">	<!-- resultType : 쿼리문을 수행시키고 나서 반환하는 자료형 적어주기. count 개수 나오니 _int -->
+		SELECT COUNT(*) FROM BOARD WHERE STATUS='Y'
+	</select>
+
+<!-- 230307 6교시-->
+	<!-- 게시글 목록 조회 테스트 쿼리문. 상단의 <resultMap>으로 -->	
+	<select id="selectAll" resultMap="boardListResultMap">
+		<!-- SELECT B.NO,
+			   B.TITLE,
+			   M.ID,
+			   B.ORIGINAL_FILENAME,
+			   B.RENAMED_FILENAME,
+			   B.READCOUNT,
+			   B.CREATE_DATE
+		FROM BOARD B JOIN MEMBER M ON(B.WRITER_NO = M.NO) 
+		WHERE B.STATUS = 'Y' -->
+<!-- 230307 8교시 -->
+	<!-- 재사용 가능한 sql 조각을 만들어 중복되는 쿼리문 정리 -->
+		<include refid="boardListSql"/>
+		ORDER BY B.NO DESC
+	</select>
+
+<!-- 230307 8교시-->
+	<!-- 게시글 수 조회(검색 기능 적용) 테스트 쿼리문 -->
+	<select id="selectBoardCountByKeyWord" resultType="_int">
+		<!-- <if> 없는 쿼리문은 전체 게시글 수 조회하는 쿼리문-->
+		SELECT COUNT(*)
+		FROM BOARD B
+		JOIN MEMBER M ON (B.WRITER_NO = M.NO)
+		WHERE B.STATUS='Y'
+		<if test="writer != null">	<!-- test 안의 writer는 boardDao의 Map<키, 값>의 키값! | null이 아닐 때 추가 시킬 쿼리문 <if> 안에 넣기 -->
+			AND M.ID LIKE '%' || #{writer} || '%'
+		</if>
+		<if test="title != null">
+			AND B.TITLE LIKE '%' || #{title} || '%'
+		</if>
+		<if test="content != null">
+			AND B.CONTENT LIKE '%' || #{content} || '%'
+		</if>		
+	</select>
+
+<!-- 230307 7교시-->
+	<!-- 게시글 목록 조회(검색 기능 적용) 테스트 쿼리문. 상단의 <resultMap>으로 -->
+	<select id="selectAllByKeyWord" resultMap="boardListResultMap">
+		<!-- SELECT B.NO,
+			   B.TITLE,
+			   M.ID,
+			   B.ORIGINAL_FILENAME,
+			   B.RENAMED_FILENAME,
+			   B.READCOUNT,
+			   B.CREATE_DATE
+		FROM BOARD B JOIN MEMBER M ON(B.WRITER_NO = M.NO) 
+		WHERE B.STATUS = 'Y' -->
+<!-- 230307 8교시 -->
+	<!-- 재사용 가능한 sql 조각을 만들어 중복되는 쿼리문 정리 -->
+		<include refid="boardListSql"/>
+		<!--
+			동적 쿼리
+			1. 다중 <if>를 활용한 검색 기능 구현
+		-->
+		<!-- 파라미터로 넘어오는 값을 확인해 null인지 체크해서 null이면 <if>없는 쿼리문 수행,
+			 값이 있으면 그 값을 조회하는 <if>문 더해 쿼리문 수행 -->
+		<if test="writer != null">	<!-- test 안의 writer는 boardDao의 Map<키, 값>의 키값! | null이 아닐 때 추가 시킬 쿼리문 <if> 안에 넣기 -->
+			AND M.ID LIKE '%' || #{writer} || '%'
+		</if>
+		<if test="title != null">
+			AND B.TITLE LIKE '%' || #{title} || '%'
+		</if>
+		<if test="content != null">
+			AND B.CONTENT LIKE '%' || #{content} || '%'
+		</if>
+		ORDER BY B.NO DESC
+	</select>
+	
+</mapper>

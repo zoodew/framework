@@ -3,6 +3,7 @@
 <!-- 230228 6교시 -->
 
 <!-- Mapper 설정 파일임을 선언 -->
+<!-- 선언만 한다고 다 사용가능한 게 아니라 메인 설정 파일(mybatis-config)에 가서 등록을 해줘야 함 <mappers>에 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <mapper namespace="memberMapper"> 					<!-- namespace : 외부에서 xml에 접근할 수 있는 이름을 주는 속성 -->
@@ -119,7 +120,7 @@
 		외부에서 매개변수로 받은 값은 #{변수명}으로 값을 가져온다.
 	-->
 	<select id="selectMemberById" parameterType="string" resultMap="memberResultMap">
-						<!-- 왜 string String 대문자 아닌가? 강의듣고 정리!!-->
+						<!-- 왜 string String 대문자 아닌가? 내장별칭 -->
 		<!--
 		SELECT NO, ID, PASSWORD, ROLE, NAME, PHONE, EMAIL, ADDRESS, HOBBY, STATUS, ENROLL_DATE, MODIFY_DATE
 		FROM MEMBER
@@ -131,6 +132,71 @@
 		WHERE ID = #{id} AND STATUS = 'Y'
 	</select>
 	
+	
+<!-- 230307 1교시 2교시 -->
+	<!-- 회원 등록 테스트 INSERT 쿼리문 --> 	<!-- r mybatis-config에 <typeAlias> 지정해서 패키지명 생략 가능 -->
+	<insert id="insertMember" parameterType="Member"
+			useGeneratedKeys="true" keyColumn="NO" keyProperty="no">
+	<!--
+		데이터를 insert 후 PK 값을 받아오기 위해서는 useGeneratedKeys, keyColumn, keyProperty 속성을 추가해야 한다.
+			useGeneratedKeys	: insert 후에 PK 값을 받아올 수 있도록 허용하는 속성
+			keyColumn			: PK에 해당하는 컬럼을 지정하는 속성
+			keyProperty			: PK 값이 담길 파라미터 인스턴스의 필드명을 지정하는 속성									  insert가 완료되면 파라미터에 담긴 키 값을 set해줌
+	-->
+		INSERT INTO MEMBER (
+			NO,
+			ID,
+			PASSWORD,
+			ROLE,
+			NAME,
+			PHONE,
+			EMAIL,
+			ADDRESS,
+			HOBBY,
+			STATUS,
+			ENROLL_DATE,
+			MODIFY_DATE
+		) VALUES(
+			SEQ_UNO.NEXTVAL,
+			#{id},	<!-- 인스턴스의 필드명으로 통해 각각의 필드에 접근이 가능함 -->
+			#{password},
+			DEFAULT,
+			#{name},
+			#{phone},
+			#{email},
+			#{address},
+			#{hobby},
+			DEFAULT,
+			DEFAULT,
+			DEFAULT
+		)
+	</insert>
+	
+
+<!-- 230307 3교시 -->
+	<!-- 회원 등록 테스트 UPDATE 쿼리문 -->
+	<update id="updateMember" parameterType="Member">
+		UPDATE MEMBER
+		SET
+			NAME = #{name},	<!-- member에서 전달받은 값 받아서 넣어줌 -->
+			PASSWORD = #{password},
+			PHONE = #{phone},
+			EMAIL = #{email},
+			ADDRESS = #{address},
+			HOBBY = #{hobby},
+			MODIFY_DATE = SYSDATE
+		WHERE NO = #{no}
+	</update>
+	
+	
+<!-- 230307 3교시 -->
+	<!-- 회원 삭제 테스트 쿼리문 -->
+	<delete id="deleteMember" parameterType="string">	<!-- id는 문자열. 그래서 string. 왜 소문자? 내장별칭 -->
+		DELETE FROM MEMBER WHERE ID = #{id}
+	</delete>
+	
 </mapper>
+
+
 
 

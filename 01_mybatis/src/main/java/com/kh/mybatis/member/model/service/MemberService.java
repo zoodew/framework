@@ -54,11 +54,53 @@ public class MemberService {
 		
 		return member;
 	}
+
+// 230307 1교시
+	// 회원 등록 테스트
+	public int save(Member member) {
+		int result = 0;
+		
+		// mvc에서 connection을 얻어오듯 SqlSession object를 얻어옴
+		SqlSession session = getSession();
+		
+		// no(기본키)값과 중복된다면 이미 존재하는 회원이니까 update, no값과 일치하는 값이 없다면 새로운 회원이니 insert
+		if(member.getNo() > 0) {	// no(PK)값 받아서 0보다 크면 ~
+			result = new MemberDao().updateMember(session, member);
+		} else {
+			result = new MemberDao().insertMember(session, member);			
+		}
+		
+		System.out.println(member);
+		
+		// 영향 받은 행이 있으면(insert든 update든) 커밋, 아니면 롤백
+		if(result > 0) {
+			session.commit();
+		} else {
+			session.rollback();
+		}
+		
+		session.close();
+		
+		return result;
+	}
+	
+// 230307 3교시	
+	// 회원 삭제 테스트
+	public int delete(String id) {
+		int result = 0;
+		SqlSession session = getSession();
+		
+		result = new MemberDao().delete(session, id);
+		
+		if(result > 0) {
+			session.commit();
+		} else {
+			session.rollback();
+		}
+		
+		session.close();
+		
+		return result;
+	}
 }
-
-
-
-
-
-
 
