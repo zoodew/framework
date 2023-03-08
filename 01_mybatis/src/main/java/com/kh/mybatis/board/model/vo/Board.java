@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Board {
 
-private int no;
+	private int no;
 	
 	private int rowNum;
 	
@@ -37,5 +37,7 @@ private int no;
 	private Date createDate;
 	
 	private Date modifyDate;
+	
+	private String type;
 	
 }

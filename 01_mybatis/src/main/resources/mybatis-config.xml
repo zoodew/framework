@@ -45,6 +45,7 @@
 		<typeAlias type="com.kh.mybatis.member.model.vo.Member" alias="Member"/>
 		<!-- member-mapper.xml에서 패키지명까지 길게 쓰던 것(com.kh.mybatis.member.model.vo.Member)을 Member로 간단히 작성 가능하게 해줌 -->
 		<typeAlias type="com.kh.mybatis.board.model.vo.Board" alias="Board"/>
+		<typeAlias type="com.kh.mybatis.board.model.vo.Reply" alias="Reply"/>
 	</typeAliases>
 
 	<!--

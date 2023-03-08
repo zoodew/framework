@@ -13,7 +13,7 @@ public class PageInfo {
 	
 	/**
 	 * @param currentPage 현재 페이지
-	 * @param pageLimit 한 페이지에 보이는 페이지의 수 (하단에 1, 2, 3, ... 8, 9, 10)
+	 * @param pageLimit 한 페이지에 보이는 페이지의 수 (하단에 1, 2, 3, ... 8, 9, 10 버튼)
 	 * @param listCount 전체 리스트의 수			(게시물의 갯수)
 	 * @param listLimit 한 페이지에 표시될 리스트의 수 (한 페이지에 게시물 몇 개 표시할지)
 	 */

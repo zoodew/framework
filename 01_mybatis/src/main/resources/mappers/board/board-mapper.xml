@@ -19,7 +19,8 @@
 			   B.RENAMED_FILENAME,
 			   B.READCOUNT,
 			   B.CREATE_DATE
-		FROM BOARD B JOIN MEMBER M ON(B.WRITER_NO = M.NO) 
+		FROM BOARD B
+		JOIN MEMBER M ON(B.WRITER_NO = M.NO) 
 		WHERE B.STATUS = 'Y'
 	</sql>
 
@@ -34,6 +35,61 @@
 		<result property="readCount" column="READCOUNT"/>
 		<result property="createDate" column="CREATE_DATE"/>
 	</resultMap>
+
+
+<!-- 230308 7교시 -->
+	<!-- 게시글 상세 조회(댓글 포함) 테스트 쿼리문 mybatis-config.xml <typeAliases>로 가기 -->	
+		<!-- <resultMap id="boardDetailResultMap" type="Board"> type : 쿼리를 수행하고 결과값으로 받는 데이터의 타입
+			<id property="no" column="NO"/>
+			<result property="title" column="TITLE"/>
+			<result property="writeId" column="ID"/>
+			<result property="readCount" column="READCOUNT"/>
+			<result property="originalFileName" column="ORIGINAL_FILENAME"/>
+			<result property="renamedFileName" column="RENAMED_FILENAME"/>
+			<result property="content" column="CONTENT"/>
+			<result property="type" column="TYPE"/>
+			<result property="createDate" column="CREATE_DATE"/>
+			<result property="modifyDate" column="MODIFY_DATE"/>
+		</resultMap> -->
+	<!--<resultMap id="boardListResultMap">과 너무 중복됨. 해결방법 <resultMap>에 extends 속성 사용-->
+	<!--
+		extends 속성 : 다른 resultMap을 상속하는 속성이다.
+		
+		<collection> : 컬렉션에 해당하는 필드에 조회 결과를 매핑할 때 사용한다.
+			- javaType 속성은 컬렉션 필드의 자바 타입을 지정한다.
+			- select 속성은 조회하고자 하는 select 쿼리문의 id를 입력한다.
+			- column 속성은 조회하고자 하는 쿼리문의 파라미터를 전달할 때 사용한다. (파라미터가 여러 개일 때 콤마(,)로 구분)
+		
+		* 1:1 관계인 객체를 조회하고 싶다면 <associtation>을 사용해서 매핑해주면 된다. 사용법은 <collection>와 동일
+		
+			cf) <collection>	조회 결과가 여러 개일 때
+				<associtation>	조회 결과가 하나일 때	
+	-->
+	<!-- extends 속성 덕분에 boardListResultMap에 없는 컬럼만 작성해 주면 됨 -->
+	<resultMap id="boardDetailResultMap" type="Board" extends="boardListResultMap"> <!-- type : 쿼리를 수행하고 결과값으로 받는 데이터의 타입 -->
+		<result property="content" column="CONTENT"/>
+		<result property="type" column="TYPE"/>
+		<result property="modifyDate" column="MODIFY_DATE"/>
+		<!-- <resultMap>에서 <collection>을 통해 다른 쿼리문을 수행시키고 그 결과를 매핑 -->
+		<!-- selectRepliesByNo(댓글 목록 조회하는 쿼리문)을 수행시키고 그 결과를 replies라는 필드에 매핑 column : NO값을 쿼리문의 파라미터로 담아주기위한 속성 -->
+		<collection property="replies" javaType="arraylist" select="selectRepliesByNo" column="NO"/>
+	</resultMap>				<!-- javaType : property의 타입 지정. arraylist(마이바티스 내장 별칭) -->
+
+
+<!-- 230308 8교시 -->
+	<!-- 게시글 상세 조회(댓글 포함) 테스트 댓글쪽까지 구현 -->
+	<!-- <resultMap> : DB의 컬럼명과 CLASS의 필드명이 달라서 값이 들어가지 않아 직접 매핑시켜주는 요소 -->
+	<resultMap id="replyResultMap" type="Reply">	<!-- type : mybatis-config.xml <typeAliases> -->
+		<id property="no" column="NO"/>
+		<result property="boardNo" column="BOARD_NO"/>
+		<result property="content" column="CONTENT"/>
+		<result property="writerId" column="ID"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="modifyDate" column="MODIFY_DATE"/>		
+	</resultMap>	
+
+
+
 	
 <!-- 230307 5교시 -->
 	<!-- 게시글 수 조회 테스트 쿼리문-->
@@ -59,6 +115,7 @@
 		ORDER BY B.NO DESC
 	</select>
 
+
 <!-- 230307 8교시-->
 	<!-- 게시글 수 조회(검색 기능 적용) 테스트 쿼리문 -->
 	<select id="selectBoardCountByKeyWord" resultType="_int">
@@ -77,7 +134,7 @@
 			AND B.CONTENT LIKE '%' || #{content} || '%'
 		</if>		
 	</select>
-
+	
 <!-- 230307 7교시-->
 	<!-- 게시글 목록 조회(검색 기능 적용) 테스트 쿼리문. 상단의 <resultMap>으로 -->
 	<select id="selectAllByKeyWord" resultMap="boardListResultMap">
@@ -92,14 +149,14 @@
 		WHERE B.STATUS = 'Y' -->
 <!-- 230307 8교시 -->
 	<!-- 재사용 가능한 sql 조각을 만들어 중복되는 쿼리문 정리 -->
-		<include refid="boardListSql"/>
+		<!-- <include refid="boardListSql"/> -->
 		<!--
 			동적 쿼리
 			1. 다중 <if>를 활용한 검색 기능 구현
 		-->
 		<!-- 파라미터로 넘어오는 값을 확인해 null인지 체크해서 null이면 <if>없는 쿼리문 수행,
 			 값이 있으면 그 값을 조회하는 <if>문 더해 쿼리문 수행 -->
-		<if test="writer != null">	<!-- test 안의 writer는 boardDao의 Map<키, 값>의 키값! | null이 아닐 때 추가 시킬 쿼리문 <if> 안에 넣기 -->
+		<!-- <if test="writer != null">	test 안의 writer는 boardDao의 Map<키, 값>의 키값! | null이 아닐 때 추가 시킬 쿼리문 <if> 안에 넣기
 			AND M.ID LIKE '%' || #{writer} || '%'
 		</if>
 		<if test="title != null">
@@ -108,7 +165,216 @@
 		<if test="content != null">
 			AND B.CONTENT LIKE '%' || #{content} || '%'
 		</if>
+		ORDER BY B.NO DESC -->
+
+		
+<!-- 230308 1교시 동적쿼리 -->		
+		<!--
+			동적 쿼리
+			2. <choose>, <when>, <otherwise>를 활용한 검색 기능 구현
+		-->
+		<!--
+		<include refid="boardListSql"/>
+		<choose>
+			<when test="writer != null">
+				AND M.ID LIKE '%' || #{writer} || '%'
+			</when>
+			<when test="title != null">
+				AND B.TITLE LIKE '%' || #{title} || '%'
+			</when>
+			<when test="content != null">
+				AND B.CONTENT LIKE '%' || #{content} || '%'
+			</when>
+			<otherwise>				
+				위의 조건 중 하나라도 만족하지 않는 경우 포함될 쿼리문 작성. 생략 가능
+			</otherwise>
+		</choose>
 		ORDER BY B.NO DESC
+		-->
+		
+<!-- 230308 2교시 동적쿼리 -->		
+		<!--
+			동적 쿼리
+			3. <where>와 다중 <if>를 활용한 검색 기능 구현
+		-->
+		<!-- SELECT B.NO,
+			   B.TITLE,
+			   M.ID,
+			   B.ORIGINAL_FILENAME,
+			   B.RENAMED_FILENAME,
+			   B.READCOUNT,
+			   B.CREATE_DATE
+		FROM BOARD B
+		JOIN MEMBER M ON(B.WRITER_NO = M.NO) 
+		<where>
+			<if test="writer != null">	test 안의 writer는 boardDao의 Map<키, 값>의 키값!
+				M.ID LIKE '%' || #{writer} || '%'
+			</if>
+			<if test="title != null">
+				AND B.TITLE LIKE '%' || #{title} || '%'
+			</if>
+			<if test="content != null">
+				AND B.CONTENT LIKE '%' || #{content} || '%'
+			</if>
+			AND B.STATUS = 'Y'
+		</where>
+		ORDER BY B.NO DESC -->
+		
+		<!--
+			동적 쿼리
+			4. <trim>과 다중 <if>를 활용한 검색 기능 구현
+		-->
+		SELECT B.NO,
+			   B.TITLE,
+			   M.ID,
+			   B.ORIGINAL_FILENAME,
+			   B.RENAMED_FILENAME,
+			   B.READCOUNT,
+			   B.CREATE_DATE
+		FROM BOARD B
+		JOIN MEMBER M ON(B.WRITER_NO = M.NO) 
+		<trim prefix="WHERE" prefixOverrides="AND|OR">	<!-- prefix 뒤에 prefixOverrides가 오면 지워라 -->
+			<if test="writer != null">	<!-- test 안의 writer는 boardDao의 Map<키, 값>의 키값! -->
+				M.ID LIKE '%' || #{writer} || '%'
+			</if>
+			<if test="title != null">
+				AND B.TITLE LIKE '%' || #{title} || '%'
+			</if>
+			<if test="content != null">
+				AND B.CONTENT LIKE '%' || #{content} || '%'
+			</if>
+			AND B.STATUS = 'Y'
+		</trim>
+		ORDER BY B.NO DESC	
+	</select>
+	
+
+<!-- 230308 3교시 -->
+	<!-- 게시글 수 조회(검색 기능 적용 2) 테스트 -->
+	<select id="selectBoardCountByKeyWord2" resultType="_int">
+		SELECT COUNT(*)
+		FROM BOARD B
+		JOIN MEMBER M ON (B.WRITER_NO = M.NO)
+		WHERE B.STATUS='Y'
+		<if test="type != null">
+			<choose>
+				<when test='type.equals("writer")'> <!-- equals()메소드로 문자열 비교. "writer"라는 문자열과 type의 값이 같냐 -->
+					AND M.ID LIKE '%' || #{keyword} || '%'	<!-- 타입이 "writer"면 keyword를 포함하고 있는 데이터 조회 -->
+				</when>
+				<when test='type.equals("title")'>
+					AND B.TITLE LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test='type.equals("content")'>
+					AND B.CONTENT LIKE '%' || #{keyword} || '%'
+				</when>
+			</choose>
+		</if>
+	</select>
+
+<!-- 230308 2교시-->
+	<!-- 게시글 목록 조회(검색 기능 적용2) 테스트 쿼리문. 상단의 <resultMap>으로 -->
+	<select id="selectAllByKeyWord2" resultMap="boardListResultMap">
+		<include refid="boardListSql"/>
+		<!-- type이 null이 아닌지부터 체크! null이면 if 문 안 돌아서 전체 게시글 조회함 -->
+		<if test="type != null">
+			<!-- type도 종류가 세 가지라서 choose 구문 -->
+			<choose>		<!-- r 왜 test="" 아니고 ''?? 안에서 문자열 큰따옴표로 묶어줘야 해서 작은따옴표 사용함 -->
+				<when test='type.equals("writer")'> <!-- equals()메소드로 문자열 비교. writer라는 문자열과 type의 값이 같냐 -->
+					AND M.ID LIKE '%' || #{keyword} || '%'	<!-- 타입이 writer면 keyword를 포함하고 있는 데이터 조회 -->
+				</when>
+				<when test='type.equals("title")'>
+					AND B.TITLE LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test='type.equals("content")'>
+					AND B.CONTENT LIKE '%' || #{keyword} || '%'
+				</when>
+			</choose>
+		</if>
+		ORDER BY B.NO DESC
+	</select>
+
+	
+<!-- 230308 5교시 -->
+	<!-- 게시글 수 조회(필터 기능 적용) 테스트 페이징처리 2페이지 출력해보기 -->
+	<select id="selectBoardCountByFilters" resultType="_int">
+		SELECT COUNT(*)
+		FROM BOARD B
+		JOIN MEMBER M ON (B.WRITER_NO = M.NO)
+		WHERE B.STATUS='Y'
+		<!-- <if test="filters != null"> -->			<!-- Dao에서 Map에 담아서 전달하면 filters라고 직접 사용 가능함 -->
+		<!-- <if test="array != null"> -->	<!-- Dao에서 필터를 배열로 줄 때 배열명(filters)을 직접 쓰면 값을 받아오지 못함. array라고 줘야 함 -->
+		<if test="list != null">	<!-- 변수명이 뭐든 상관없이 Dao에서 List로 값을 넘기면 list라고 줘야 함 -->
+			<!--
+				AND B.TYPE IN ('B2', 'B3')	/	
+				AND B.TYPE IN ('B3')
+				이 식을 아래 foreach를 써서 반복해서 조회. 왜? 배열이니까. 배열이 몇 개가 있는지 모르니 반복문을 사용해줌
+			-->
+			AND B.TYPE IN
+			<foreach item="filter" collection="list" open="(" separator="," close=")">	<!-- collection에 filters, array, list 써줌 DAO에서 뭘 썼냐에 따라 다르게 작성 -->
+					<!-- collection의 값(<if>의 test 속성의 값(list))을 반복해서 item에 담아줌 -->
+				#{filter}<!-- #{item 변수명} -->
+			</foreach>
+		</if>
+	</select>
+	
+<!-- 230308 4교시 5교시-->
+	<!-- 게시글 목록 조회(필터 기능 적용) 테스트 쿼리문. 상단의 <resultMap>으로 -->
+	<!-- 동적 쿼리 <foreach> -->
+	<select id="selectAllByFilters" parameterType="map" resultMap="boardListResultMap">
+		<include refid="boardListSql"/>
+		<!-- filters에 값이 있을 때 if문 돌리면 돼서 조건을 filters != null로 줌 -->
+		<if test="filters != null">			<!-- Dao에서 Map에 담아서 전달하면 filters라고 직접 사용 가능함 -->
+		<!-- <if test="array != null"> -->	<!-- Dao에서 필터를 배열로 줄 때 배열명(filters)을 직접 쓰면 값을 받아오지 못함. array라고 줘야 함 -->
+		<!-- <if test="list != null"> -->	<!-- 변수명이 뭐든 상관없이 Dao에서 List로 값을 넘기면 list라고 줘야 함 -->
+			<!--
+				AND B.TYPE IN ('B2', 'B3')	/	
+				AND B.TYPE IN ('B3')
+				이 식을 아래 foreach를 써서 반복해서 조회. 왜? 배열이니까. 배열이 몇 개가 있는지 모르니 반복문을 사용해줌
+			-->
+			AND B.TYPE IN
+			<foreach item="filter" collection="filters" open="(" separator="," close=")">	<!-- collection에 filters, array, list 써줌 DAO에서 뭘 썼냐에 따라 다르게 작성 -->
+					<!-- collection의 값(<if> test 속성의 값)을 반복해서 담아서 item에 담아줌 -->
+				#{filter}<!-- #{item 변수명} -->
+			</foreach>
+		</if>
+		ORDER BY B.NO DESC
+	</select>
+	
+
+<!-- 230308 7교시 8교시 -->
+	<!-- 게시글 상세 조회(댓글 포함) 테스트 쿼리문 댓글쪽까지 구현 -->
+	<!--
+		방법1) 쿼리문을 각각 만들어서 하나의 ResultMap에 매핑하는 방법 (mvc에서 한 방법)
+	-->
+	<!-- 상세 게시글 가져오는 쿼리문 -->
+	<select id="selectBoardByNo" parameterType="_int" resultMap="boardDetailResultMap">	<!-- parameterType : Dao에서 받아오는 파라미터(no)의 자료형 적어주기 -->
+		SELECT  B.NO,
+				B.TITLE,
+				M.ID,
+				B.READCOUNT,
+				B.ORIGINAL_FILENAME,
+				B.RENAMED_FILENAME,
+				B.CONTENT,
+				B.TYPE,
+				B.CREATE_DATE,
+				B.MODIFY_DATE
+		FROM BOARD B
+		JOIN MEMBER M ON(B.WRITER_NO = M.NO)
+		WHERE B.STATUS = 'Y' AND B.NO=#{no}		<!-- #{no} : Dao에서 받아오는 파라미터의 변수명을 받아줌 -->
+	</select>
+	<!-- 댓글 목록 가져오는 쿼리문 -->
+	<!-- 아래의 쿼리문은 <resultMap id="boardDetailResultMap">에서 실행시킴 -->
+	<select id="selectRepliesByNo" parameterType="_int" resultMap="replyResultMap">
+		SELECT R.NO,
+			   R.BOARD_NO,
+			   R.CONTENT,
+			   M.ID,
+			   R.CREATE_DATE,
+			   R.MODIFY_DATE
+		FROM REPLY R
+		JOIN MEMBER M ON(R.WRITER_NO = M.NO)
+		WHERE R.STATUS='Y' AND BOARD_NO=#{no}
+		ORDER BY R.NO DESC
 	</select>
 	
 </mapper>
