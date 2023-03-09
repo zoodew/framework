@@ -66,21 +66,38 @@
 				<associtation>	조회 결과가 하나일 때	
 	-->
 	<!-- extends 속성 덕분에 boardListResultMap에 없는 컬럼만 작성해 주면 됨 -->
+	<!-- 방법 1) 쿼리문을 각각 만들어서 하나의 ResultMap에 매핑하는 방법 (mvc에서 한 방법) -->
+	<!-- <resultMap id="boardDetailResultMap" type="Board" extends="boardListResultMap"> type : 쿼리를 수행하고 결과값으로 받는 데이터의 타입
+		<result property="content" column="CONTENT"/>
+		<result property="type" column="TYPE"/>
+		<result property="modifyDate" column="MODIFY_DATE"/>
+		
+			<collection> : 컬렉션에 해당하는 필드의 조회결과를 매핑하는 요소
+			<resultMap>에서 <collection>을 통해 다른 쿼리문을 수행시키고 그 결과를 매핑
+		
+		selectRepliesByNo(댓글 목록 조회하는 쿼리문)을 수행시키고 그 결과를 replies라는 필드에 매핑 column : NO값을 쿼리문의 파라미터로 담아주기위한 속성
+		<collection property="replies" javaType="arraylist" select="selectRepliesByNo" column="NO"/>
+	</resultMap> -->				<!-- javaType : property의 타입 지정. arraylist(마이바티스 내장 별칭) -->
+
+
+<!-- 230309 1교시 -->
+	<!-- 게시글 상세 조회(댓글 포함) 테스트 쿼리문 mybatis-config.xml <typeAliases>로 가기 -->
+	<!-- 방법 2) 하나의 쿼리문을 만들어서 하나의 ResultMap에서 매핑하는 방법 -->
 	<resultMap id="boardDetailResultMap" type="Board" extends="boardListResultMap"> <!-- type : 쿼리를 수행하고 결과값으로 받는 데이터의 타입 -->
 		<result property="content" column="CONTENT"/>
 		<result property="type" column="TYPE"/>
 		<result property="modifyDate" column="MODIFY_DATE"/>
-		<!-- <resultMap>에서 <collection>을 통해 다른 쿼리문을 수행시키고 그 결과를 매핑 -->
-		<!-- selectRepliesByNo(댓글 목록 조회하는 쿼리문)을 수행시키고 그 결과를 replies라는 필드에 매핑 column : NO값을 쿼리문의 파라미터로 담아주기위한 속성 -->
-		<collection property="replies" javaType="arraylist" select="selectRepliesByNo" column="NO"/>
-	</resultMap>				<!-- javaType : property의 타입 지정. arraylist(마이바티스 내장 별칭) -->
-
+		<collection property="replies" javaType="arraylist" columnPrefix="R_" resultMap="replyResultMap"/>
+		<!-- selectBoardByNo 쿼리문을 보면 R_로 시작하는 컬럼 댓글에 대한 컬럼들.
+			 columnPrefix=""을 컬럼앞에 붙여서 resultMap=""을 타게 해 그 값을 property=""의 필드에 매핑 (다시 정리)-->
+	</resultMap>
+	
 
 <!-- 230308 8교시 -->
 	<!-- 게시글 상세 조회(댓글 포함) 테스트 댓글쪽까지 구현 -->
 	<!-- <resultMap> : DB의 컬럼명과 CLASS의 필드명이 달라서 값이 들어가지 않아 직접 매핑시켜주는 요소 -->
 	<resultMap id="replyResultMap" type="Reply">	<!-- type : mybatis-config.xml <typeAliases> -->
-		<id property="no" column="NO"/>
+		<id property="no" column="NO"/>				<!-- <resultMap id="boardDetailResultMap">에서 columnPrefix="R_"을 줬기 때문에 이 컬럼에서는 굳이 R_NO라고 적지 않아도 됨 -->
 		<result property="boardNo" column="BOARD_NO"/>
 		<result property="content" column="CONTENT"/>
 		<result property="writerId" column="ID"/>
@@ -346,35 +363,175 @@
 	<!--
 		방법1) 쿼리문을 각각 만들어서 하나의 ResultMap에 매핑하는 방법 (mvc에서 한 방법)
 	-->
-	<!-- 상세 게시글 가져오는 쿼리문 -->
-	<select id="selectBoardByNo" parameterType="_int" resultMap="boardDetailResultMap">	<!-- parameterType : Dao에서 받아오는 파라미터(no)의 자료형 적어주기 -->
-		SELECT  B.NO,
-				B.TITLE,
-				M.ID,
-				B.READCOUNT,
-				B.ORIGINAL_FILENAME,
-				B.RENAMED_FILENAME,
-				B.CONTENT,
-				B.TYPE,
-				B.CREATE_DATE,
-				B.MODIFY_DATE
-		FROM BOARD B
-		JOIN MEMBER M ON(B.WRITER_NO = M.NO)
-		WHERE B.STATUS = 'Y' AND B.NO=#{no}		<!-- #{no} : Dao에서 받아오는 파라미터의 변수명을 받아줌 -->
-	</select>
-	<!-- 댓글 목록 가져오는 쿼리문 -->
-	<!-- 아래의 쿼리문은 <resultMap id="boardDetailResultMap">에서 실행시킴 -->
-	<select id="selectRepliesByNo" parameterType="_int" resultMap="replyResultMap">
-		SELECT R.NO,
-			   R.BOARD_NO,
-			   R.CONTENT,
-			   M.ID,
-			   R.CREATE_DATE,
-			   R.MODIFY_DATE
-		FROM REPLY R
-		JOIN MEMBER M ON(R.WRITER_NO = M.NO)
-		WHERE R.STATUS='Y' AND BOARD_NO=#{no}
-		ORDER BY R.NO DESC
-	</select>
+		<!-- 상세 게시글 가져오는 쿼리문 -->
+		<!-- <select id="selectBoardByNo" parameterType="_int" resultMap="boardDetailResultMap">	parameterType : Dao에서 받아오는 파라미터(no)의 자료형 적어주기
+			SELECT  B.NO,
+					B.TITLE,
+					M.ID,
+					B.READCOUNT,
+					B.ORIGINAL_FILENAME,
+					B.RENAMED_FILENAME,
+					B.CONTENT,
+					B.TYPE,
+					B.CREATE_DATE,
+					B.MODIFY_DATE
+			FROM BOARD B
+			JOIN MEMBER M ON(B.WRITER_NO = M.NO)
+			WHERE B.STATUS = 'Y' AND B.NO=#{no}		#{no} : Dao에서 받아오는 파라미터의 변수명을 받아줌
+		</select> -->
+		<!-- 댓글 목록 가져오는 쿼리문 -->
+		<!-- 아래의 쿼리문은 <resultMap id="boardDetailResultMap">에서 실행시킴 -->
+		<!-- <select id="selectRepliesByNo" parameterType="_int" resultMap="replyResultMap">
+			SELECT R.NO,
+				   R.BOARD_NO,
+				   R.CONTENT,
+				   M.ID,
+				   R.CREATE_DATE,
+				   R.MODIFY_DATE
+			FROM REPLY R
+			JOIN MEMBER M ON(R.WRITER_NO = M.NO)
+			WHERE R.STATUS='Y' AND BOARD_NO=#{no}
+			ORDER BY R.NO DESC
+		</select> -->
+		
+<!-- 230309 1교시 -->
+	<!-- 게시글 상세 조회(댓글 포함) 테스트 쿼리문 댓글쪽까지 구현 -->
+	<!--
+		방법 2) 하나의 쿼리문을 만들어서 하나의 ResultMap에서 매핑하는 방법
+		
+		게시글 하나에 여러 댓글이 있을 때 한 게시물만 나올 수 있게 만듦(Board(필드명, 필드명, 필드명, replies()))
+	-->
+		<select id="selectBoardByNo" parameterType="_int" resultMap="boardDetailResultMap">
+			SELECT B.NO,
+			       B.TITLE, 
+			       M.ID, 
+			       B.READCOUNT,
+			       B.ORIGINAL_FILENAME,
+			       B.RENAMED_FILENAME,
+			       B.CONTENT,
+			       B.TYPE,
+			       B.CREATE_DATE,
+			       B.MODIFY_DATE,
+			       R.NO AS "R_NO",						<!-- 아래 댓글 컬럼 컬럼명이 똑같은 컬럼이 많아서 별칭 부여 -->
+			       R.BOARD_NO AS "R_BOARD_NO",
+			       R.CONTENT AS "R_CONTENT",
+			       M2.ID AS "R_ID",
+			       R.CREATE_DATE AS "R_CREATE_DATE",
+			       R.MODIFY_DATE AS "R_MODIFY_DATE"
+			FROM BOARD B
+			JOIN MEMBER M ON(B.WRITER_NO = M.NO)
+			LEFT OUTER JOIN REPLY R ON(B.NO = R.BOARD_NO)		<!-- LEFT 'OUTER' JOIN : 댓글이 없으면 REPLY쪽 컬럼 조회 안 됨 -->
+			LEFT OUTER JOIN MEMBER M2 ON(R.WRITER_NO = M2.NO)	<!-- INNER OUTER JOIN 공부해서 이해해보기! -->
+			WHERE B.STATUS = 'Y' AND B.NO = #{no}
+		</select>
+
+
+<!-- 230309 2교시 -->
+	<!-- 게시글 등록 테스트 쿼리문 -->
+	<insert id="insertBoard" parameterType="Board"
+		useGeneratedKeys="true" keyProperty="no" keyColumn="NO">
+		<!-- PK키값을 조회해서 INSERT하는 속성
+				useGeneratedKeys="true" true : PK키값을 조회하겠다
+				keyProperty="no" 		no에 넣겠다.
+				keyColumn="NO" 			NO를 조회해서
+		-->
+		INSERT INTO BOARD (
+				NO,
+				WRITER_NO,
+				TITLE,
+				CONTENT,
+				ORIGINAL_FILENAME,
+				RENAMED_FILENAME			
+		)
+		VALUES(
+			SEQ_BOARD_NO.NEXTVAL,
+		    #{writerNo},
+		    #{title},
+		    #{content},
+		    #{originalFileName},
+		    #{renamedFileName}
+		)	<!-- DEFAULT 값이 들어가는 컬럼은 삭제. 없어도 자동으로 들어감 -->
+	</insert>	
+	
+<!-- 230309 3교시 -->
+	<!-- 게시물 수정 테스트 쿼리문
+		 동적 쿼리 <set>과 다중 <if>를 활용한 update 구문 작성
+		 동적 쿼리 <trim>과 다중 <if>를 활용한 update 구문 작성 -->
+	<update id="updateBoard" parameterType="Board">	<!-- parameterType : 파라미터를 쿼리문에서 사용하기 때문에 타입 지정 -->
+		<!--
+			1. 기존 JDBC에서 사용하던 쿼리를 활용한 UPDATE 구문 작성
+		-->
+		<!-- UPDATE BOARD 
+		SET
+			TITLE = #{title},
+			CONTENT = #{content},
+			ORIGINAL_FILENAME = #{originalFileName},
+			RENAMED_FILENAME = #{renamedFileName},
+			MODIFY_DATE = SYSDATE
+		WHERE NO = #{no} -->
+		
+		<!-- 파라미터 값 여부에 따라 값이 있으면 구문에 포함하고 값이 없으면 구문에 포함시키지 않도록 만들기 -->
+		<!--
+			2. 동적 쿼리 <set>과 다중 <if>를 활용한 update 구문 작성
+			
+			<set>
+				- UPDATE 쿼리문의 SET절을 동적으로 구현할 때 사용하는 요소이다.
+				- UPDATE 하고자 하는 컬럼을 동적으로 포함시키기 위해 사용한다.
+				- set 요소는 SET 키워드를 붙이고 불필요한 콤마를 제거한다
+		-->
+		<!-- UPDATE BOARD
+		<set>
+			<if test="title != null">
+				TITLE = #{title},
+			</if>
+			<if test="content != null">
+				CONTENT = #{content},
+			</if>
+			<if test="originalFileName != null">
+				ORIGINAL_FILENAME = #{originalFileName},
+			</if>
+			<if test="renamedFileName != null">
+				RENAMED_FILENAME = #{renamedFileName},
+			</if>
+			MODIFY_DATE = SYSDATE
+		</set>
+		WHERE NO = #{no} -->
+		
+		<!--
+			3. 동적 쿼리 <trim>과 다중 <if>를 활용한 update 구문 작성
+			
+			<trim>
+				- 쿼리문의 특정 구문을 추가하거나 없앨 때 사용하는 요소이다.
+				- 요소 안의 쿼리문이 완성될 때 처음 시작할 단어(prefix)와
+				  시작 시 제거해야 할 단어(prefixOverrides)를 명시하여
+				  where 요소와 동일한 기능을 하도록 구현할 수 있다.
+				- 요소 안의 쿼리문이 완성될 때 처음 시작할 단어(prefix)와
+				  마지막에 제거해야 할 단어(suffixOverrides)를 명시하여
+				  set 요소와 동일한 기능을 하도록 구현할 수 있다.
+		-->
+		UPDATE BOARD
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="title != null">
+				TITLE = #{title},
+			</if>
+			<if test="content != null">
+				CONTENT = #{content},
+			</if>
+			<if test="originalFileName != null">
+				ORIGINAL_FILENAME = #{originalFileName},
+			</if>
+			<if test="renamedFileName != null">
+				RENAMED_FILENAME = #{renamedFileName},
+			</if>
+			MODIFY_DATE = SYSDATE
+		</trim>
+		WHERE NO = #{no}
+	</update>
+
+<!-- 230309 4교시 -->
+	<!-- 게시글 삭제 테스트 쿼리문 -->
+	<update id="updateStatus" parameterType="map">
+		UPDATE BOARD SET STATUS = #{status} WHERE NO = #{no}
+	</update>
 	
 </mapper>

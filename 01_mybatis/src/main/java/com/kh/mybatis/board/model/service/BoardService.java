@@ -6,12 +6,16 @@ import com.kh.mybatis.board.model.dao.BoardDao;
 import com.kh.mybatis.board.model.vo.Board;
 import com.kh.mybatis.common.util.PageInfo;
 
+import lombok.extern.slf4j.Slf4j;
+
 import static com.kh.mybatis.common.template.SqlSessionTemplate.getSession;
 
 import java.util.List;
 
 // 230307 4교시
-			// r ctrl 1로 BoardServiceTest 클래스 생성
+
+// r 230309 6교시 로그를 찍어주고 싶으면 @Slf4j 달고 30 31행 처럼 작성해주면 됨
+@Slf4j			// r ctrl 1로 BoardServiceTest 클래스 생성
 public class BoardService {
 
 // 230307 4교시 5교시
@@ -22,6 +26,9 @@ public class BoardService {
 		SqlSession session = getSession();
 		
 		count = new BoardDao().getBoardCount(session);
+		
+		log.info("getBoardCount() 메소드 호출");
+		log.debug("getBoardCount() 메소드 호출 - " + count);
 		
 		session.close();
 		
@@ -131,7 +138,7 @@ public class BoardService {
 	
 // 230308 6교시
 	// 게시글 상세 조회(댓글 포함) 테스트	
-	public Board getBoardByNo(int no) {	// no = 게시글 번호
+	public Board findBoardByNo(int no) {	// no = 게시글 번호
 		Board board = null;	// Board 타입의 참조변수 board 
 		SqlSession session = getSession();
 		
@@ -140,6 +147,55 @@ public class BoardService {
 		session.close();
 		
 		return board;
+	}
+	
+	
+// 230309 2교시
+	// 게시글 등록 테스트
+	// 게시글 수정 테스트
+	public int save(Board board) {
+	// (Board board) 매개값은 넘어오는 상태에 따라 insert하거나 update함
+
+		int result = 0;
+		SqlSession session = getSession();
+
+		//Board object의 상태에 따라 INSERT, UPDATE
+		if(board.getNo() > 0) {	// 가져온 no가 0보다 크다 = 테이블에 이미 no 값이 있다. 
+			result = new BoardDao().updateBoard(session, board);
+			
+		} else {
+			result = new BoardDao().insertBoard(session, board);
+		}
+		
+		if(result > 0) {
+			session.commit();
+		} else {
+			session.rollback();
+		}
+				
+		session.close();
+		
+		return result;
+	}
+	
+
+// 230309 4교시
+	// 게시글 삭제 테스트
+	public int delete(int no) {
+		int result = 0;
+		SqlSession session = getSession();
+		
+		result = new BoardDao().updateStatus(session, no, "N");
+											// "N" = status 상태값
+		if(result > 0) {
+			session.commit();
+		} else {
+			session.rollback();
+		}
+		
+		session.close();
+		
+		return result;
 	}
 	
 }

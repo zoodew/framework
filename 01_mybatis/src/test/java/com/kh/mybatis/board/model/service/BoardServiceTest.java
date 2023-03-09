@@ -287,20 +287,95 @@ class BoardServiceTest {
 	void findBoardByNoTest() {
 		Board board = null;	// Board 타입의 참조변수 board
 		
-		board = service.getBoardByNo(122);	// 122번 게시글에 댓글이 있어서 122번 게시글 가져옴
-		
+		board = service.findBoardByNo(122);	// 122번 게시글에 댓글이 있어서 122번 게시글 가져옴
+											// 없는 게시글로도 테스트 해보고 어떻게 다른지 해보기
 		System.out.println(board);
 		System.out.println(board.getReplies());
 		
 		assertThat(board).isNotNull();
 		assertThat(board.getNo()).isEqualTo(122);
+		assertThat(board.getReplies().size()).isGreaterThan(0);
 	}
 	
 	
+// 230309 2교시
+	// 게시글 등록 테스트
+	@Test
+	@Order(10)
+	@DisplayName("게시글 등록 테스트")
+	public void insertBoardTest() {
+		int result = 0;
+		Board board = new Board();
+		
+		// 웹으로는 화면에서 넘겨받는 데이터를 임의로 만들어서 테스트
+		board.setWriterNo(15);	// MEMBER 테이블의 NO 중 아무거나
+		board.setTitle("mybatis 게시글");
+		board.setContent("mybatis로 게시글을 작성하였습니다.");
+		board.setOriginalFileName("test.txt");
+		board.setRenamedFileName("test.txt");
+		
+		result = service.save(board); // save()메소드에서 정상적으로 작동되면 영향 받은 행의 갯수 리턴. result int로 선언
+		
+//		System.out.println(board);
+		
+		assertThat(result).isGreaterThan(0);
+		assertThat(board.getNo()).isGreaterThan(0);
+		assertThat(service.findBoardByNo(board.getNo())).isNotNull();
+					// 실제 DB에도 잘 들어갔는지 확인
+	}
 	
-	
-	
-	
+
+// 230309 2교시 3교시
+	// 게시글 수정 테스트
+	@ParameterizedTest
+	@MethodSource("boardProvider")
+	@Order(11)
+	@DisplayName("게시글 수정 테스트")
+	void updateBoardTest(Board board) {
+		int result = 0;
+//		List<Board> list = service.findAll(new PageInfo(1, 10, service.getBoardCount(), 10));
+//		Board board = list.get(0);	// list.get(0) : list의 0번 인덱스에 있는 거 가져와
+		// @MethodSource("boardProvider") 사용해서 코드를 줄여줌
+		
+		board.setTitle("mybatis 게시글 수정");
+		board.setContent("mybatis 게시글을 수정하였습니다.");
+		board.setOriginalFileName(null);	// null로 값을 넣어줬을 때 동적 쿼리가 아닌 1번 update 쿼리문을 쓰면 DB의 ORIGINAL_FILENAME이 null로 변경됨
+		board.setRenamedFileName(null);		// 2번 3번 동적 쿼리로 지정하면 null로 바뀌지 않고 그대로 데이터가 남아있음
+		
+		result = service.save(board);
+		
+		System.out.println(board);
+		
+		assertThat(result).isGreaterThan(0);
+		assertThat(service.findBoardByNo(board.getNo())).isNotNull()
+					.extracting("title").isEqualTo("mybatis 게시글 수정");
+	}
+
+
+// 230309 3교시 4교시
+	// 게시글 삭제 테스트
+	@ParameterizedTest
+	@MethodSource("boardProvider")
+	@Order(12)
+	@DisplayName("게시글 삭제 테스트")
+	void deleteBoardTest(Board board) {
+		int result = 0;
+		
+	/*
+	 * List<Board> list = service.findAll(new PageInfo(1, 10,
+	 * service.getBoardCount(), 10)); Board board = list.get(0);
+	 * 주석으로 묶은 코드 updateBoardTest()에 있는 코드와 동일. 중복 정리하는 방법
+	 * 		@ParameterizedTest @MethodSource("boardProvider")
+	 */
+		
+//		System.out.println(board);
+		
+		result = service.delete(board.getNo());	// delete 쿼리 수행시키면 정수값 리턴
+		
+		assertThat(result).isEqualTo(1);
+		assertThat(service.findBoardByNo(board.getNo())).isNull();	// status 값이 N으로 바뀌었으니 null이 뜸
+	}
+
 	
 	
 	
@@ -313,6 +388,23 @@ class BoardServiceTest {
 			Arguments.arguments((Object) new String[] {"B2", "B3"}),	// 테스트 메소드(findAllTest(String[] filters)) 파라미터에 넣고 싶은 값을 배열로 넣어줌. B2, B3 를 가져옴
 			Arguments.arguments((Object) new String[] {"B3"})			// B3 만 선택하는 경우
 		);
+	}
+	
+// 230309 3교시
+	// 중복되는 코드 정리, 수정
+	public static Stream<Arguments> boardProvider() {
+		BoardService service = new BoardService();
+		List<Board> list = service.findAll(new PageInfo(1, 10, service.getBoardCount(), 10));
+		// static은 클래스명에 .찍고 실행시킴
+		// private 접근제한자로 필드 선언된 service는 클래스를 만들고 생성됨
+		// 정적 메소드에서는 정적 필드에는 직접 접근 가능하나 클래스에 선언된 필드에는 직접 접근이 불가능 service. 이렇게 불가능
+		// 해결법 service 생성하기
+		// static 은 해당 프로젝트가 돌아갈때 생성. 메모리 영역이 heap영역이 아니라 static영역에 저장하겠다!
+		// static 은 접근할 수 있는 시점이 다양
+		// 지금 클래스의 필드는 static으로 선언되지 않았음
+		// (다시 정리)
+		
+		return Stream.of(Arguments.arguments(list.get(0)));	// 0번인덱스 = 제일 최신 글
 	}
 	
 }

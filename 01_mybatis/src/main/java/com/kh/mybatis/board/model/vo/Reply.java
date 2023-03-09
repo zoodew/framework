@@ -24,4 +24,5 @@ public class Reply {
 	private Date createDate;
 	
 	private Date modifyDate;
+	
 }

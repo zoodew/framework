@@ -154,5 +154,32 @@ public class BoardDao {
 	public Board findBoardByNo(SqlSession session, int no) {
 		return session.selectOne("boardMapper.selectBoardByNo", no);
 	}
+
+
+// 230309 2교시
+	// 게시글 등록 테스트
+	public int insertBoard(SqlSession session, Board board) {
+
+		return session.insert("boardMapper.insertBoard", board);
+	}
+	
+	
+// 230309 3교시
+	// 게시글 수정 테스트
+	public int updateBoard(SqlSession session, Board board) {
+
+		return session.update("boardMapper.updateBoard", board);
+	}
+
+	
+// 230309 4교시
+	// 게시글 삭제 테스트	
+	public int updateStatus(SqlSession session, int no, String status) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("no", no);	// Object타입인데 정수값 넘어가네? 오토박싱! 기본타입을 오브젝트 타입으로 넘겨줌(다시정리)
+		map.put("status", status);
+		
+		return session.update("boardMapper.updateStatus", map);
+	}
 	
 }

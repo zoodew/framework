@@ -19,6 +19,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import com.kh.mybatis.member.model.vo.Member;
 
+import lombok.extern.slf4j.Slf4j;
+
 // 230306 4교시
 @DisplayName("MemberService 테스트")
 @TestMethodOrder(OrderAnnotation.class)	// 230307 1교시 테스트 메소드 순서 제어 @TestMethodOrder OrderAnnotation에 class 정보 넘겨주고 메소드에 @order 달아서 순서 지정해줌

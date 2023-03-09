@@ -5,11 +5,14 @@ import org.apache.ibatis.session.SqlSession;
 import com.kh.mybatis.member.model.dao.MemberDao;
 import com.kh.mybatis.member.model.vo.Member;
 
+import lombok.extern.slf4j.Slf4j;
+
 import static com.kh.mybatis.common.template.SqlSessionTemplate.getSession;
 
 import java.util.List;
 
 // 230306 3, 4교시
+@Slf4j		// 230309 6교시
 public class MemberService {
 	// 클래스명에 커서 놓고 ctrl 1 creat junit test어쩌고 동일한 패키지 구조로 test 폴더에 테스트 클래스 생성
 
@@ -21,6 +24,9 @@ public class MemberService {
 		SqlSession session = getSession();	// import 에 static getSession하고 SqlSessionTemplate.getSession()에서 SqlSessionTemplate. 생략
 
 		count = new MemberDao().getMemberCount(session);
+		
+		log.info("getMemberCount() 메소드 호출");
+		log.debug("getMemberCount() 메소드 호출 - " + count);
 		
 		// connection 등도 사용 후 close를 해 준 것처럼 session도 반환해줌
 		session.close();
