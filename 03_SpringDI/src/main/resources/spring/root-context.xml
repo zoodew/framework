@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!-- 230310 7교시 -->
+<!-- <import> 요소를 사용하여 다른 XML 설정을 가져오기 -->
+	<!-- 관리 용이성이 높고, 사용하기도 편리함 -->
+
+	<!-- 다른 설정 파일을 가져오기 위해 사용 -->
+	<import resource="owner-context.xml"/>
+	<import resource="pet-context.xml"/>
+		<!-- resource = 현재 파일기준!!
+			가져올 파일(owner-context.xml, pet-context.xml)이 동일한 위치에 있어서 파일명만 적어주면 됨 -->
+</beans>

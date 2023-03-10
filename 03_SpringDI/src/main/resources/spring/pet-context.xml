@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!-- 230310 7교시 -->
+<!-- <import> 요소를 사용하여 다른 XML 설정을 가져오기 -->
+	<!-- pet에 관한 bean 모음 root-context.xml에서 만든 코드들 이동시킴 -->
+
+<!-- 230310 6교시 -->
+	<!-- dog bean(객체) 만들기 -->
+	<!--
+		Dog dog = new Dog();
+		
+		dog.setName("보리");
+	-->
+	<!-- <bean id="dog" class="com.kh.di.pet.Dog">
+		com.kh.di.pet.Dog 이렇게 쓰면 기본 생성자로 bean을 생성
+		
+		<property name="name" value="보리" />
+	</bean> -->
+<!-- 230310 7교시 -->
+	<!-- p 네임스페이스 속성을 통해 더 간결히 bean 생성
+		 p:필드명="값" p:필드명-ref(다른 bean을 사용할 때) -->
+	<bean id="dog" class="com.kh.di.pet.Dog" p:name="보리"/>
+	
+	<!-- cat bean(객체) 만들기 -->
+	<!--
+		Cat cat = new Cat("콜리");
+	-->
+	<!-- <bean id="cat" class="com.kh.di.pet.Cat">
+		<constructor-arg name="name" value="콜리" />
+	</bean> -->
+<!-- 230310 7교시 -->
+	<!-- 생성자의 매개변수 순서대로 값을 주입하는 방법 -->
+	<!-- <bean id="cat" class="com.kh.di.pet.Cat">
+		<constructor-arg index="0" value="콜리" />
+	</bean> -->
+	<!-- 생성자를 처리할 때 name이라는 속성을 사용해도 되고 index라는 속성을 사용해도 된다. -->
+<!-- 230310 7교시 -->
+	<!-- c 네임스페이스 속성을 통해 더 간결히 bean 생성 -->	
+	<!-- <bean id="cat" class="com.kh.di.pet.Cat" c:name="콜리"/> -->
+	<!-- 인덱스로도 c 네임스페이스를 사용할 수 있다 -->
+	<!-- <bean id="cat" class="com.kh.di.pet.Cat" c:_0="콜리"/> -->
+	<!-- 생성자의 매개값이 하나일 때 최대한 생략해서 c:_ 아래와 같이 작성이 가능하다 -->
+	<bean id="cat" class="com.kh.di.pet.Cat" c:_="콜리"/>
+
+
+</beans>

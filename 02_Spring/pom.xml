@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.kh</groupId>
+	<artifactId>spring</artifactId>
+	<name>02_Spring</name>
+<!--
+	230310 1교시 에러 없애기 설정 수정
+	<java-version>11, <org.springframework-version>5.3.25로 변경 후
+	메이븐 업데이트 alt + f5
+	230310 2교시 에러 없애기 설정 수정
+	주석 <Servlet> 쪽 다 수정
+	<dependency> 통으로 다 수정
+	<dependency>
+		    <groupId>javax.servlet</groupId>
+    <dependency>
+    		<groupId>javax.servlet.jsp</groupId
+-->
+	<packaging>war</packaging>
+	<version>1.0.0-BUILD-SNAPSHOT</version>
+	<properties>
+		<java-version>11</java-version>
+		<org.springframework-version>5.3.25</org.springframework-version>
+		<org.aspectj-version>1.6.10</org.aspectj-version>
+		<org.slf4j-version>1.6.6</org.slf4j-version>
+	</properties>
+	<dependencies>
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+<!-- <version>에 버전을 담은 태그명을 ${}로 넣어주면 그대로 바뀜 -->
+			<version>${org.springframework-version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				 </exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+				
+		<!-- AspectJ -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${org.aspectj-version}</version>
+		</dependency>	
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- @Inject -->
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+		</dependency>
+				
+<!-- 230310 2교시 에러 없애기 설정 수정
+	 Servlet ~ 테스트 메소드까지 -->
+		<!-- Servlet -->
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <version>4.0.1</version>
+		    <scope>provided</scope> <!--  provided : 컴파일 시점에는 필요하나 배포할 땐 필요하지 않은 것들 -->
+		</dependency>
+
+		<dependency>
+		    <groupId>javax.servlet.jsp</groupId>
+		    <artifactId>javax.servlet.jsp-api</artifactId>
+		    <version>2.3.3</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.apache.taglibs</groupId>
+		    <artifactId>taglibs-standard-impl</artifactId>
+		    <version>1.2.5</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.taglibs</groupId>
+		    <artifactId>taglibs-standard-spec</artifactId>
+		    <version>1.2.5</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.taglibs</groupId>
+		    <artifactId>taglibs-standard-jstlel</artifactId>
+		    <version>1.2.5</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.taglibs</groupId>
+		    <artifactId>taglibs-standard-compat</artifactId>
+		    <version>1.2.5</version>
+		</dependency>
+		
+		<!-- lombok 라이브러리 -->
+		<dependency>
+		    <groupId>org.projectlombok</groupId>	<!-- 서버에 저장된 여러 프로젝트 중 lombok임을 구분하기 위한 id(대부분 회사의 도메인 역순으로 지정함) -->
+		    <artifactId>lombok</artifactId>			<!-- 실제 빌드할 때 파일의 이름 -->
+		    <version>1.18.26</version>
+		    <scope>provided</scope>
+		</dependency>
+	
+		<!-- Test -->
+		<!-- test(테스트) 관련 라이브러리 -->
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>	<!-- 테스트 할 때 사용하는 라이브러리 -->
+		    <artifactId>junit-jupiter-api</artifactId>
+		    <version>5.9.2</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<!-- 테스트 할 때마다 값을 바꾸지 않고 특정 값을 지정해 여러 번 테스트 할 수 있게 만들기-->
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-params</artifactId>
+		    <version>5.9.2</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<!-- 테스트 메소드 -->
+		<dependency>
+		    <groupId>org.assertj</groupId>
+		    <artifactId>assertj-core</artifactId>
+		    <version>3.24.2</version>
+		    <scope>test</scope>
+		</dependency>        
+	</dependencies>
+    <build>
+        <plugins>
+            <plugin>
+<!-- 230310 2교시 maven-eclipse-plugin 최신 버전으로 변경  <version>2.10 -->
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.10</version>
+                <configuration>
+                    <additionalProjectnatures>
+                        <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+                    </additionalProjectnatures>
+                    <additionalBuildcommands>
+                        <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
+                    </additionalBuildcommands>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+<!-- 230310 2교시 maven-compiler-plugin 최신 버전으로 변경 <version>3.10.1 -->
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+<!-- 230310 2교시 properties의 java-version에서 선언한 버전 정보를 가져옴 위에서 바뀌면 아래서도 바뀜 -->
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                    <compilerArgument>-Xlint:all</compilerArgument>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <mainClass>org.test.int1.Main</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
